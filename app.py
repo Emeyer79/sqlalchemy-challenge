@@ -39,9 +39,7 @@ def welcome():
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
         f"/api/v1.0/<start><br/>"
-        f"- Given the start date, calc the min/avg/max temps for the past year<br/>"
         f"/api/v1.0/<start>/<end><br/>"
-        f"- W/ start and end date, calc the min/avg/max temps for dates between the start and end dates<br/>"
     
     )
 
@@ -146,11 +144,12 @@ def start_end_date(start, end):
 
     start_date = datetime.strptime(start, '%Y-%m-%d').date()
     end_date = datetime.strptime(end, '%Y-%m-%d').date()
-    start = dt.datetime.strptime(rec_date, '%Y-%m-%d')  - dt.timedelta(days=365)
+    start = dt.datetime.strptime(start_date, '%Y-%m-%d')  - dt.timedelta(days=365)
+    end = dt.datetime.strptime(end_date, '%Y-%m-%d')  - dt.timedelta(days=365)
     
 
     temperature_stats = session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)).\
-        filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
+        filter(Measurement.date >= start).filter(Measurement.date <= end).all()
     temps_stats_results = list(np.ravel(temperature_stats))    
     return jsonify(temps_stats_results)
 
